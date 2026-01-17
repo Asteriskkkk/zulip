@@ -582,7 +582,7 @@
             /* Constrain height to 10em, but otherwise keep
                the width to the size of the gallery, and
                therefore the message area. */
-            max-height: 10em;
+            max-height: var(--image-video-preview-max-height, 10em);
             max-width: 100%;
 
             /* Allow height and width to grow as needed, though
@@ -695,8 +695,10 @@
                values for media thumbnails, we carry forward
                reasonable dimensions for a landscape thumbnail
                here. */
-            height: 8em;
-            width: 12em;
+            max-height: var(--image-video-preview-max-height, 10em);
+            max-width: 100%;
+            height: auto;
+            width: auto;
         }
     }
 

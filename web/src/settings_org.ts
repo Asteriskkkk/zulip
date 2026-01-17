@@ -55,6 +55,7 @@ import * as ui_report from "./ui_report.ts";
 import * as user_groups from "./user_groups.ts";
 import type {UserGroup} from "./user_groups.ts";
 import * as util from "./util.ts";
+import { user_settings } from "./user_settings.ts";
 
 const meta = {
     loaded: false,
@@ -67,6 +68,69 @@ export function reset(): void {
 const DISABLED_STATE_ID = -1;
 
 let unsaved_welcome_message_custom_text = "";
+
+function update_existing_image_video_preview_sizes(image_box_em: number): void {
+    const font_size_in_use = user_settings.web_font_size_px;
+
+    for (const img of document.querySelectorAll<HTMLImageElement>(
+        ".message-media-preview-image .media-image-element[data-original-dimensions], \
+        .message-media-inline-image .media-image-element[data-original-dimensions], \
+        .message-media-preview-video .media-video-element[data-original-dimensions], \
+        .message-media-inline-video .media-video-element[data-original-dimensions]",
+    )) {
+        const original_dimensions_attribute = img.getAttribute("data-original-dimensions");
+        if (!original_dimensions_attribute) {
+            continue;
+        }
+
+        const original_dimensions = original_dimensions_attribute.split("x");
+        if (original_dimensions.length !== 2) {
+            continue;
+        }
+
+        const original_width = Number(original_dimensions[0]);
+        const original_height = Number(original_dimensions[1]);
+        if (
+            !Number.isFinite(original_width) ||
+            !Number.isFinite(original_height) ||
+            original_height === 0
+        ) {
+            continue;
+        }
+
+        const is_dinky_image = original_height / font_size_in_use <= image_box_em;
+
+        if (is_dinky_image) {
+            img.style.setProperty("width", `${original_width}px`);
+        } else {
+            img.style.setProperty(
+                "width",
+                `${(image_box_em * original_width) / original_height}em`,
+            );
+        }
+    }
+}
+
+function get_image_preview_sizing(): string {
+    // Map size values: 0=small (current size), 1=medium (+50%), 2=large (+100%)
+    const size_map: Record<number, string> = {
+        0: "10em",
+        1: "15em",
+        2: "20em",
+    };
+    const size_value = realm.realm_image_video_preview_size ?? 0;
+    const max_height = size_map[size_value] ?? "10em";
+    return max_height;
+}
+
+export function update_image_video_preview_size_css(): void {
+    // Map size values: 0=small (current size), 1=medium (+50%), 2=large (+100%)
+    const max_height = get_image_preview_sizing();
+    $(":root").css("--image-video-preview-max-height", max_height);
+
+    const image_box_em = Number.parseFloat(max_height);
+    update_existing_image_video_preview_sizes(image_box_em);
+}
 
 export function maybe_disable_widgets(): void {
     if (current_user.is_owner) {
@@ -1307,6 +1371,14 @@ export let init_dropdown_widgets = (): void => {
         return options;
     };
 
+    const image_video_preview_size_options = (): dropdown_widget.Option[] => {
+        return [
+            {name: $t({defaultMessage: "Small"}), unique_id: 0},
+            {name: $t({defaultMessage: "Medium"}), unique_id: 1},
+            {name: $t({defaultMessage: "Large"}), unique_id: 2},
+        ];
+    };
+
     set_up_dropdown_widget(
         "realm_moderation_request_channel_id",
         moderation_request_channel_options,
@@ -1332,6 +1404,12 @@ export let init_dropdown_widgets = (): void => {
         "realm_default_code_block_language",
         combined_code_language_options,
         "language",
+    );
+
+    set_up_dropdown_widget(
+        "realm_image_video_preview_size",
+        image_video_preview_size_options,
+        "number",
     );
     set_up_dropdown_widget(
         "realm_default_language",

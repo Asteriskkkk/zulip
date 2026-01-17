@@ -206,6 +206,11 @@
                   is_checked=realm_enable_read_receipts
                   label=admin_settings_label.realm_enable_read_receipts
                   label_parens_text=admin_settings_label.realm_enable_read_receipts_parens_text}}
+                  
+                {{> ../dropdown_widget_with_label
+                  widget_name="realm_image_video_preview_size"
+                  label=admin_settings_label.realm_image_video_preview_size
+                  value_type="number"}}
 
                 {{#if server_inline_image_preview}}
                 {{> settings_checkbox

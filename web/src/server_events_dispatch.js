@@ -307,6 +307,7 @@ export function dispatch_normal_event(event) {
                 direct_message_permission_group: noop,
                 email_changes_disabled: settings_account.update_email_change_display,
                 disallow_disposable_email_addresses: noop,
+                image_video_preview_size: settings_org.update_image_video_preview_size_css,
                 inline_image_preview: noop,
                 inline_url_embed_preview: noop,
                 invite_required: noop,

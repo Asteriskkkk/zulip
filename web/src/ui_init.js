@@ -119,6 +119,7 @@ import * as search from "./search.ts";
 import * as server_events from "./server_events.js";
 import * as server_events_state from "./server_events_state.ts";
 import * as settings from "./settings.ts";
+import * as settings_org from "./settings_org.ts";
 import * as settings_notifications from "./settings_notifications.ts";
 import * as settings_panel_menu from "./settings_panel_menu.ts";
 import * as settings_preferences from "./settings_preferences.ts";
@@ -454,6 +455,7 @@ export async function initialize_everything(state_data) {
     i18n.initialize({language_list: page_params.language_list});
     timerender.initialize();
     information_density.initialize();
+    settings_org.update_image_video_preview_size_css();
     if (page_params.is_spectator) {
         theme.initialize_theme_for_spectator();
     }

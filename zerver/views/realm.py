@@ -140,6 +140,7 @@ def update_realm(
     enable_read_receipts: Json[bool] | None = None,
     enable_spectator_access: Json[bool] | None = None,
     giphy_rating: Json[int] | None = None,
+    image_video_preview_size: Json[int] | None = None,
     inline_image_preview: Json[bool] | None = None,
     inline_url_embed_preview: Json[bool] | None = None,
     invite_required: Json[bool] | None = None,

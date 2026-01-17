@@ -2,10 +2,26 @@ import assert from "minimalistic-assert";
 
 import {$t} from "./i18n.ts";
 import * as thumbnail from "./thumbnail.ts";
+import {realm} from "./state_data.ts";
 import {user_settings} from "./user_settings.ts";
 import * as util from "./util.ts";
 
 let inertDocument: Document | undefined;
+
+function get_image_video_preview_box_em(): number {
+    // 0=small, 1=medium, 2=large. Keep in sync with settings_org.ts mapping.
+    const size_value =
+        (realm as unknown as {realm_image_video_preview_size?: number} | undefined)
+            ?.realm_image_video_preview_size ?? 0;
+
+    const size_map: Record<number, number> = {
+        0: 10,
+        1: 15,
+        2: 20,
+    };
+
+    return size_map[size_value] ?? 10;
+}
 
 export function postprocess_content(html: string): string {
     inertDocument ??= new DOMParser().parseFromString("", "text/html");
@@ -277,7 +293,7 @@ export function postprocess_content(html: string): string {
             const image_min_aspect_ratio = 0.4;
             // "Dinky" images are those that are shorter than the
             // 10em height reserved for thumbnails
-            const image_box_em = 10;
+            const image_box_em = get_image_video_preview_box_em();
             const is_dinky_image = original_height / font_size_in_use <= image_box_em;
             const has_extreme_aspect_ratio =
                 original_width / original_height <= image_min_aspect_ratio ||

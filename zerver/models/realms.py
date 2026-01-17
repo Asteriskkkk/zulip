@@ -221,6 +221,8 @@ class Realm(models.Model):
     # Whether the organization has enabled inline image and URL previews.
     inline_image_preview = models.BooleanField(default=True)
     inline_url_embed_preview = models.BooleanField(default=False)
+    # Size of image and video previews in messages: 0=small (10em), 1=medium (15em), 2=large (20em)
+    image_video_preview_size = models.SmallIntegerField(default=0)
 
     # Whether digest emails are enabled for the organization.
     digest_emails_enabled = models.BooleanField(default=False)
@@ -723,6 +725,7 @@ class Realm(models.Model):
         enable_read_receipts=bool,
         enable_spectator_access=bool,
         giphy_rating=int,
+        image_video_preview_size=int,
         inline_image_preview=bool,
         inline_url_embed_preview=bool,
         invite_required=bool,
